@@ -1,2 +1,2 @@
-# vector-db-engine
-In-Memory Vector Database Engine in C/C++ supporting k-NN search with brute-force and IVF indexing, exposed via a TCP server-client architecture.
+# PostgreSQL Extension
+PostgreSQL C extension adding a native semantic version type with comparison operators, utility functions, and aggregates.
