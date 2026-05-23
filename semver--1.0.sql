@@ -160,3 +160,25 @@ CREATE AGGREGATE min(semver) (
     SFUNC = semver_smaller,
     STYPE = semver
 );
+
+
+-- ================================================
+-- BONUS 3: Text casts
+-- ================================================
+
+CREATE FUNCTION semver_from_text(text)
+    RETURNS semver
+    AS 'MODULE_PATHNAME', 'semver_from_text'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION semver_to_text(semver)
+    RETURNS text
+    AS 'MODULE_PATHNAME', 'semver_to_text'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE CAST (text AS semver)
+    WITH FUNCTION semver_from_text(text)
+    AS IMPLICIT;
+
+CREATE CAST (semver AS text)
+    WITH FUNCTION semver_to_text(semver);

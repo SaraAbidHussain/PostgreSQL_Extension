@@ -232,3 +232,39 @@ Datum semver_smaller(PG_FUNCTION_ARGS)
     Semver *b = (Semver *) PG_GETARG_POINTER(1);
     PG_RETURN_POINTER(semver_compare(a, b) <= 0 ? a : b);
 }
+
+
+//BONUS 3: Cast functions between text and semver
+
+PG_FUNCTION_INFO_V1(semver_from_text);
+Datum semver_from_text(PG_FUNCTION_ARGS)
+{
+    text   *txt = PG_GETARG_TEXT_PP(0);
+    char   *str = text_to_cstring(txt);
+    Semver *result = (Semver *) palloc(sizeof(Semver));
+    int     n;
+    char    extra;
+
+    n = sscanf(str, "%d.%d.%d%c",
+               &result->major,
+               &result->minor,
+               &result->patch,
+               &extra);
+
+    if (n != 3 || result->major < 0 || result->minor < 0 || result->patch < 0)
+        ereport(ERROR,
+                (errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+                 errmsg("invalid input syntax for type semver: \"%s\"", str),
+                 errhint("Expected format: MAJOR.MINOR.PATCH (e.g. 1.2.3)")));
+
+    PG_RETURN_POINTER(result);
+}
+
+PG_FUNCTION_INFO_V1(semver_to_text);
+Datum semver_to_text(PG_FUNCTION_ARGS)
+{
+    Semver *v      = (Semver *) PG_GETARG_POINTER(0);
+    char   *str    = (char *) palloc(32);
+    snprintf(str, 32, "%d.%d.%d", v->major, v->minor, v->patch);
+    PG_RETURN_TEXT_P(cstring_to_text(str));
+}
