@@ -18,10 +18,6 @@ CREATE TYPE semver (
 );
 
 
--- ================================================
--- COMPARISON FUNCTIONS
--- ================================================
-
 CREATE FUNCTION semver_lt(semver, semver)
     RETURNS bool
     AS 'MODULE_PATHNAME', 'semver_lt'
@@ -57,9 +53,6 @@ CREATE FUNCTION semver_cmp(semver, semver)
     AS 'MODULE_PATHNAME', 'semver_cmp'
     LANGUAGE C IMMUTABLE STRICT;
 
--- ================================================
--- OPERATORS
--- ================================================
 
 CREATE OPERATOR < (
     LEFTARG = semver, RIGHTARG = semver,
@@ -97,9 +90,6 @@ CREATE OPERATOR > (
     COMMUTATOR = <, NEGATOR = <=
 );
 
--- ================================================
--- UTILITY FUNCTIONS
--- ================================================
 
 CREATE FUNCTION major(semver)
     RETURNS int4
@@ -136,10 +126,6 @@ CREATE OPERATOR CLASS semver_ops
         OPERATOR 5 >,
         FUNCTION 1 semver_cmp(semver, semver);
 
--- ================================================
--- AGGREGATE FUNCTIONS
--- ================================================
-
 
 CREATE FUNCTION semver_larger(semver, semver)
     RETURNS semver
@@ -161,10 +147,6 @@ CREATE AGGREGATE min(semver) (
     STYPE = semver
 );
 
-
--- ================================================
--- BONUS 3: Text casts
--- ================================================
 
 CREATE FUNCTION semver_from_text(text)
     RETURNS semver

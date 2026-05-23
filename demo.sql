@@ -1,8 +1,3 @@
--- ================================================
--- semver Extension Demo
--- Run with: psql mydb -f demo.sql
--- ================================================
-
 CREATE EXTENSION IF NOT EXISTS semver;
 
 DROP TABLE IF EXISTS packages;
@@ -34,34 +29,26 @@ INSERT INTO packages VALUES
     ('elasticsearch', '8.11.0'),
     ('kibana',        '8.11.0');
 
--- 1. Basic cast and display
 SELECT '1.2.3'::semver;
 
--- 2. Correct version comparison (integer not string)
 SELECT '1.10.0'::semver > '1.9.0'::semver AS numeric_compare_correct;
 
--- 3. Filter and sort by version
 SELECT name, version
 FROM packages
 WHERE version >= '2.0.0'::semver
 ORDER BY version DESC;
 
--- 4. Extract version components
 SELECT major(version) AS major, minor(version) AS minor, patch(version) AS patch
 FROM packages WHERE name = 'postgres';
 
--- 5. MAX and MIN aggregates
 SELECT max(version) FROM packages;
 SELECT min(version) FROM packages;
 
--- 6. is_compatible (npm caret rule)
 SELECT name, version, is_compatible(version, '1.0.0'::semver)
 FROM packages ORDER BY version DESC;
 
--- 7. bump_minor
 SELECT bump_minor('1.2.3'::semver);
 
--- BONUS 1: B-tree Index Scan
 CREATE INDEX idx_packages_version ON packages USING btree (version);
 
 EXPLAIN SELECT * FROM packages WHERE version >= '2.0.0'::semver;
@@ -70,5 +57,4 @@ SET enable_seqscan = off;
 EXPLAIN SELECT * FROM packages WHERE version >= '2.0.0'::semver;
 SET enable_seqscan = on;
 
--- cleanup
 DROP TABLE packages;
