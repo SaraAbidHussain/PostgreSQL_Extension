@@ -135,3 +135,27 @@ CREATE OPERATOR CLASS semver_ops
         OPERATOR 4 >=,
         OPERATOR 5 >,
         FUNCTION 1 semver_cmp(semver, semver);
+
+-- ================================================
+-- AGGREGATE FUNCTIONS
+-- ================================================
+
+CREATE FUNCTION semver_larger(semver, semver)
+    RETURNS semver
+    AS 'MODULE_PATHNAME', 'semver_larger'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION semver_smaller(semver, semver)
+    RETURNS semver
+    AS 'MODULE_PATHNAME', 'semver_smaller'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE AGGREGATE max(semver) (
+    SFUNC = semver_larger,
+    STYPE = semver
+);
+
+CREATE AGGREGATE min(semver) (
+    SFUNC = semver_smaller,
+    STYPE = semver
+);
