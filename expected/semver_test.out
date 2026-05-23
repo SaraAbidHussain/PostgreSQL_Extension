@@ -1,11 +1,4 @@
 CREATE EXTENSION semver;
--- ================================================
--- semver regression tests
--- Covers all requirements from the project manual
--- ================================================
--- ================================================
--- 1. BASIC INPUT AND OUTPUT
--- ================================================
 SELECT '1.2.3'::semver;
  semver 
 --------
@@ -36,9 +29,6 @@ SELECT '0.0.0'::semver;
  0.0.0
 (1 row)
 
--- ================================================
--- 2. INPUT REJECTION (malformed strings)
--- ================================================
 SELECT '1.2'::semver;
 ERROR:  invalid input syntax for type semver: "1.2"
 LINE 1: SELECT '1.2'::semver;
@@ -79,10 +69,6 @@ ERROR:  invalid input syntax for type semver: "1.2.3+build"
 LINE 1: SELECT '1.2.3+build'::semver;
                ^
 HINT:  Expected format: MAJOR.MINOR.PATCH (e.g. 1.2.3)
--- ================================================
--- 3. COMPARISON OPERATORS
--- field-by-field integer comparison, not string
--- ================================================
 SELECT '1.2.3'::semver < '1.2.4'::semver AS lt_patch;
  lt_patch 
 ----------
@@ -167,9 +153,6 @@ SELECT '2.0.0'::semver > '1.99.99'::semver AS gt_major;
  t
 (1 row)
 
--- ================================================
--- 4. UTILITY FUNCTIONS
--- ================================================
 SELECT major('16.4.0'::semver);
  major 
 -------
@@ -230,9 +213,6 @@ SELECT is_compatible('1.0.0'::semver, '1.0.0'::semver);
  t
 (1 row)
 
--- ================================================
--- 5. TABLE OPERATIONS AND ORDER BY
--- ================================================
 CREATE TABLE test_packages (name text, version semver);
 INSERT INTO test_packages VALUES
     ('postgres', '16.4.0'),
@@ -283,9 +263,6 @@ SELECT * FROM test_packages WHERE version < '2.0.0'::semver ORDER BY version ASC
  rust  | 1.81.0
 (3 rows)
 
--- ================================================
--- 6. MAX AND MIN AGGREGATES
--- ================================================
 SELECT max(version) FROM test_packages;
    max   
 ---------
@@ -298,9 +275,6 @@ SELECT min(version) FROM test_packages;
  1.22.0
 (1 row)
 
--- ================================================
--- 7. COMBINED QUERY (is_compatible demo)
--- ================================================
 SELECT name, version, is_compatible(version, '1.0.0'::semver)
 FROM test_packages
 ORDER BY version DESC;
@@ -315,7 +289,4 @@ ORDER BY version DESC;
  go       | 1.22.0  | t
 (7 rows)
 
--- ================================================
--- cleanup
--- ================================================
 DROP TABLE test_packages;
