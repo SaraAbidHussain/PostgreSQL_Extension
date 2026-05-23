@@ -140,6 +140,7 @@ CREATE OPERATOR CLASS semver_ops
 -- AGGREGATE FUNCTIONS
 -- ================================================
 
+
 CREATE FUNCTION semver_larger(semver, semver)
     RETURNS semver
     AS 'MODULE_PATHNAME', 'semver_larger'
