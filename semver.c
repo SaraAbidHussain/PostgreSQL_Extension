@@ -209,3 +209,26 @@ Datum semver_is_compatible(PG_FUNCTION_ARGS)
 }
 
 
+/* ================================================
+ * semver_larger: state transition function for MAX
+ * Called for each row, keeps the bigger value
+ * ================================================ */
+PG_FUNCTION_INFO_V1(semver_larger);
+Datum semver_larger(PG_FUNCTION_ARGS)
+{
+    Semver *a = (Semver *) PG_GETARG_POINTER(0);
+    Semver *b = (Semver *) PG_GETARG_POINTER(1);
+    PG_RETURN_POINTER(semver_compare(a, b) >= 0 ? a : b);
+}
+
+/* ================================================
+ * semver_smaller: state transition function for MIN
+ * Called for each row, keeps the smaller value
+ * ================================================ */
+PG_FUNCTION_INFO_V1(semver_smaller);
+Datum semver_smaller(PG_FUNCTION_ARGS)
+{
+    Semver *a = (Semver *) PG_GETARG_POINTER(0);
+    Semver *b = (Semver *) PG_GETARG_POINTER(1);
+    PG_RETURN_POINTER(semver_compare(a, b) <= 0 ? a : b);
+}
